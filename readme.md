@@ -5,6 +5,9 @@ It supports OPD, IPD, EPD patient management, user roles, medicine stock, report
 
 
 ---
+Database file removed — code is for demonstration and learning purposes only.
+---
+
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue)
 ![License](https://img.shields.io/badge/License-Educational-lightgrey)
