@@ -1,0 +1,65 @@
+# How to Add New Year Partitions in the Hospital Management MySQL Database
+
+## Why Partitioning?
+Your database uses **year-based partitioning** for the OPD_Patients, IPD_Patients, and EPD_Patients tables. Partitioning improves query performance, simplifies archiving, and keeps the database responsive as records grow year by year.
+
+## When to Add New Partitions
+
+- **Annually**: Before the start of a new year (e.g., in December), add a partition for the upcoming year.
+- **If you see errors** like "No partition found for value" when inserting data for a new year, add the partition immediately.
+- **Best Practice**: Schedule this as a routine maintenance task at the end of each year.
+
+## How to Add a New Partition
+
+Suppose you want to add a partition for the year **2027** (to handle records with `registration_date`, `admission_date`, or `date` in 2027).
+
+1. **Connect to MySQL**  
+   Use your preferred MySQL tool (MySQL Workbench, command-line client, etc.).
+
+2. **Run the following SQL commands:**
+
+```sql
+-- For OPD patients
+ALTER TABLE OPD_Patients ADD PARTITION (
+    PARTITION p2027 VALUES LESS THAN (2028)
+);
+
+-- For IPD patients
+ALTER TABLE IPD_Patients ADD PARTITION (
+    PARTITION p2027 VALUES LESS THAN (2028)
+);
+
+-- For EPD patients
+ALTER TABLE EPD_Patients ADD PARTITION (
+    PARTITION p2027 VALUES LESS THAN (2028)
+);
+```
+
+3. **Verify Partition Added**
+
+To check if the partition was added, run:
+```sql
+SHOW CREATE TABLE OPD_Patients;
+SHOW CREATE TABLE IPD_Patients;
+SHOW CREATE TABLE EPD_Patients;
+```
+You should see `PARTITION p2027 VALUES LESS THAN (2028)` in the output.
+
+## Important Notes
+
+- **Do not drop old partitions unless you are archiving data.** Older partitions contain previous years' records.
+- If you miss adding a partition and insert data for the new year, you may get an error. Just add the partition as above and retry.
+- Partition names (`p2027`) and values (`LESS THAN (2028)`) must match the year you are adding.
+- If you expect very high data volumes or want to archive old records, consult a DBA before dropping or merging partitions.
+
+## Summary Checklist
+
+- [ ] Add new partitions **before January 1st** each year.
+- [ ] Use the correct SQL for each patient table.
+- [ ] Confirm partition addition with `SHOW CREATE TABLE`.
+- [ ] Document this step in your annual database maintenance plan.
+
+---
+
+**For more info:**  
+See [MySQL Partitioning Documentation](https://dev.mysql.com/doc/refman/8.0/en/partitioning.html)
